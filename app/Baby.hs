@@ -61,9 +61,12 @@ capital "" = "Empty string, whoops!"
 capital all@(x:xs) = "The first letter of " ++ all ++ " is " ++ [x] 
 densityTell :: (RealFloat a) => a -> a -> String  
 densityTell mass volume  
-    | mass / volume < 1.2 = "Wow! You're going for a ride in the sky!"  
-    | mass / volume <= 1000.0 = "Have fun swimming, but watch out for sharks!"  
+    | density < air = "Wow! You're going for a ride in the sky!"  
+    | density <= water = "Have fun swimming, but watch out for sharks!"  
     | otherwise   = "If it's sink or swim, you're going to sink."
+    where density = mass / volume
+          air = 1.2  
+          water = 1000.0 
 max' :: (Ord a) => a -> a -> a  
 max' a b | a > b = a | otherwise = b
 myCompare :: (Ord a) => a -> a -> Ordering  
@@ -72,8 +75,35 @@ a `myCompare` b
     | a == b    = EQ  
     | otherwise = LT
 densityTell' :: String -> String  
-densityTell' input  
-    | Just density <- readMaybe input, density < 1.2 = "Wow! You're going for a ride in the sky!"  
-    | Just density <- readMaybe input, density <= 1000.0 = "Have fun swimming, but watch out for sharks!"  
-    | Nothing <- readMaybe input :: (RealFloat a => Maybe a) = "You know I need a density, right?"  
-    | otherwise   = "If it's sink or swim, you're going to sink."
+densityTell' input =
+  case readMaybe input :: Read a => Maybe a of
+    Just density | density < 1.2 -> "Wow! You're going for a ride in the sky!"
+                 | density <= 1000.0 -> "Have fun swimming, but watch out for sharks!"
+    Nothing -> "You know I need a density, right?"
+    otherwise -> "If it's sink or swim, you're going to sink."
+    where (air, water) = (1.2, 1000.0)
+
+initials :: String -> String -> String  
+initials firstname lastname = [f] ++ ". " ++ [l] ++ "."  
+    where (f:_) = firstname  
+          (l:_) = lastname
+calcDensities :: (RealFloat a) => [(a, a)] -> [a]  
+calcDensities xs = [density m v | (m, v) <- xs]  
+    where density mass volume = mass / volume
+
+cylinder :: (RealFloat a) => a -> a -> a  
+cylinder r h = 
+    let sideArea = 2 * pi * r * h  
+        topArea = pi * r ^2  
+    in  sideArea + 2 * topArea
+
+calcDensities' :: (RealFloat a) => [(a, a)] -> [a]  
+calcDensities' xs = [density | (m, v) <- xs, let density = m / v]
+
+calcDens :: (RealFloat a) => [(a, a)] -> [a]  
+calcDens xs = [density | (m, v) <- xs, let density = m / v, density < 1.2]
+
+describeList :: [a] -> String  
+describeList xs = "The list is " ++ case xs of [] -> "empty."  
+                                               [x] -> "a singleton list."  
+                                               xs -> "a longer list."  
