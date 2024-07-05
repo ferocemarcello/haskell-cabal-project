@@ -1,3 +1,5 @@
+import Text.Read
+
 doubleMe x = x + x + x
 doubleUs x y = doubleMe x + doubleMe y
 doubleSmallNumber x = if x > 100  
