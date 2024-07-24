@@ -1,5 +1,9 @@
 module Baby where
 import Text.Read
+import Data.List 
+import qualified Data.Map as M
+import Geometry
+import Geometry.Sphere  
 
 doubleMe x = x + x + x
 doubleUs x y = doubleMe x + doubleMe y
@@ -161,4 +165,7 @@ multThree :: (Num a) => a -> a -> a -> a
 multThree x y z = x * y * z
 
 compareWithHundred :: (Num a, Ord a) => a -> Ordering  
-compareWithHundred x = compare 100
+compareWithHundred x = compare x 100
+
+numUniques :: (Eq a) => [a] -> Int  
+numUniques = length . nub 
